@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-from django.shortcuts import render
-from rest_framework import viewsets
-from users.models import RequiredUser
-from rest_framework import serializers
-from users.serializers import UserSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
-
-class UserViewSet(viewsets.ModelViewSet):
-
-    model = RequiredUser
-    queryset = RequiredUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-    lookup_field = 'username'
-=======
 import random
 
 from django.core.mail import send_mail
@@ -103,4 +86,3 @@ class UserRegView(mixins.CreateModelMixin, viewsets.GenericViewSet):
 class UserTokenView(TokenObtainPairView):
 
     serializer_class = UserTokenSerializer
->>>>>>> feature/reg_auth_users
