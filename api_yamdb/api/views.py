@@ -13,7 +13,7 @@ from users.permissions import IsAuthUserOnly, IsAdminOnly, IsAnonymReadOnly, IsM
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    permission_classes = (IsAdminOnly,)
+    #permission_classes = (IsAdminOnly,)
     pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('genre__slug')
@@ -23,6 +23,11 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.request.method == 'GET':
             return GetTitleSerializer
         return PostPatchTitleSerializer
+    
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [IsAnonymReadOnly()]
+        return [IsAdminOnly()]
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
@@ -57,12 +62,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 class GenreViewSet(CategoryGenreMixinView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    filterset_fields = ('name',)
-    search_fields = ('name',)
 
 
 class CategoryViewSet(CategoryGenreMixinView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    filterset_fields = ('name',)
-    search_fields = ('name',)

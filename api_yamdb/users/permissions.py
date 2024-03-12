@@ -1,5 +1,4 @@
-from rest_framework import exceptions, permissions, status
-from rest_framework.response import Response
+from rest_framework import permissions
 
 
 class IsAnonymReadOnly(permissions.BasePermission):
@@ -21,11 +20,4 @@ class IsModeratorOnly(permissions.BasePermission):
 
 class IsAdminOnly(permissions.BasePermission):
     def has_permission(self, request, view):
-        return (request.user.is_authenticated and request.user.role == 'admin') or (
-            request.method in permissions.SAFE_METHODS
-        )
-
-    # def has_object_permission(self, request, view, obj):
-    #     if request.method == 'GET':
-    #         raise exceptions.MethodNotAllowed(['GET'])
-    #     return True
+        return request.user.is_authenticated and (request.user.role == 'admin' or request.user.is_superuser)

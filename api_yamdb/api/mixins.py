@@ -7,7 +7,7 @@ from rest_framework.mixins import (
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.viewsets import GenericViewSet
 
-from users.permissions import IsAdminOnly
+from users.permissions import IsAdminOnly, IsAnonymReadOnly
 
 
 class CategoryGenreMixinView(
@@ -16,5 +16,10 @@ class CategoryGenreMixinView(
     filter_backends = (filters.SearchFilter,)
     lookup_field = 'slug'
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAdminOnly,)
+    filterset_fields = ('name',)
     search_fields = ('name',)
+
+    def get_permissions(self):
+        if self.action == 'list':
+            return [IsAnonymReadOnly()]
+        return [IsAdminOnly()]
