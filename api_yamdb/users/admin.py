@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import RequiredUser
+
+from .models import NewUser
 
 # Register your models here.
-admin.site.register(RequiredUser)
+admin.site.register(NewUser)
