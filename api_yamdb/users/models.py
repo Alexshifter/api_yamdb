@@ -13,7 +13,7 @@ class NewUser(AbstractUser):
     role = models.CharField(choices=ROLE_CHOICES,
                             max_length=20, default=ROLE_CHOICES[0][0])
     confirmation_code = models.CharField(blank=True, max_length=10)
-    email = models.EmailField(max_length=254, blank=False)
+    email = models.EmailField(max_length=254, blank=False, unique=True)
 
     class Meta:
         constraints = [

@@ -29,6 +29,7 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def me(self, request):
         current_user = request.user
+
         if request.method == 'GET':
             serializer = self.get_serializer(current_user)
             return Response(status=status.HTTP_200_OK, data=serializer.data)
@@ -37,7 +38,7 @@ class UserViewSet(viewsets.ModelViewSet):
             data=request.data,
             partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer.save(role=current_user.role)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
