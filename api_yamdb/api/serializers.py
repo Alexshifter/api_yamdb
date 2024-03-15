@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
@@ -14,6 +15,7 @@ class CategorySerializer(serializers.ModelSerializer):
         max_length=50,
         validators=[UniqueValidator(queryset=Category.objects.all())],
     )
+
     class Meta:
         model = Category
         fields = ('name', 'slug')
@@ -38,9 +40,11 @@ class ReviewSerializer(serializers.ModelSerializer):
                 author=request.user
             ).exists():
                 raise ValidationError(
-                    'На одно произведение пользователь может оставить только один отзыв.'
+                    ('На одно произведение '
+                     'пользователь может оставить только один отзыв.')
                 )
         return data
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
@@ -54,14 +58,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(
-        max_length=256,
-        validators=[UniqueValidator(queryset=Genre.objects.all())],
-    )
-    slug = serializers.SlugField(
-        max_length=50,
-        validators=[UniqueValidator(queryset=Genre.objects.all())],
-    )
 
     class Meta:
         model = Genre
@@ -69,16 +65,22 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class GetTitleSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=True, read_only=True)
-    category = CategorySerializer(read_only=True)
-    rating = serializers.IntegerField(required=False, default=None)
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
+    rating = serializers.SerializerMethodField(default=None)
 
     class Meta:
         fields = (
             'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
         )
-
         model = Title
+
+    def get_rating(self, title):
+        rating = Review.objects.filter(
+            title=title
+        ).aggregate(
+            Avg('score')).get('score__avg')
+        return rating
 
 
 class PostPatchTitleSerializer(serializers.ModelSerializer):
@@ -91,6 +93,8 @@ class PostPatchTitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Category.objects.all()
     )
+    year = serializers.IntegerField(required=True)
+    name = serializers.CharField(required=True, max_length=256)
 
     class Meta:
         fields = (

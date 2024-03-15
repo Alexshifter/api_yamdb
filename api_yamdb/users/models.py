@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from reviews.models import LENGTH_LIMIT
+
 ROLE_CHOICES = [
     ('user', 'Пользователь'),
     ('admin', 'Администратор'),
@@ -22,3 +24,6 @@ class NewUser(AbstractUser):
                 name='unique_pair_username_email',
             )
         ]
+
+    def __str__(self):
+        return f'Пользователь {self.username}, роль {self.role}'[:LENGTH_LIMIT]

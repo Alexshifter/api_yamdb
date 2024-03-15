@@ -1,11 +1,11 @@
 import random
 
 from django.core.mail import send_mail
-from rest_framework import decorators, filters, mixins, pagination, status, viewsets
+from rest_framework import (decorators, filters, mixins, pagination, status,
+                            viewsets)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-
 from users.models import NewUser
 from users.permissions import IsAdminOnly
 from users.serializers import (UserRegSerializer, UserSerializer,

@@ -8,9 +8,6 @@ from users.models import NewUser
 
 class UserSerializer(serializers.ModelSerializer):
 
-#    email = serializers.EmailField(max_length=254)
-#    username = serializers.SlugField(max_length=150)
-
     class Meta:
         fields = (
             'username', 'email', 'first_name', 'last_name', 'bio', 'role',
