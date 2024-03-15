@@ -6,6 +6,7 @@ from rest_framework import (decorators, filters, mixins, pagination, status,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
+
 from users.models import NewUser
 from users.permissions import IsAdminOnly
 from users.serializers import (UserRegSerializer, UserSerializer,
@@ -18,7 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = (IsAdminOnly,)
     pagination_class = pagination.LimitOffsetPagination
-    lookup_field = "username"
+    lookup_field = 'username'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     http_method_names = ['get', 'post', 'patch', 'delete']
