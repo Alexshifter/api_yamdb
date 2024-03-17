@@ -18,11 +18,12 @@ api_v1_router.register(
 )
 api_v1_router.register('users', UserViewSet, basename='users')
 
+auth_urls = [
+    path('signup/', UserRegView.as_view({'post': 'create'})),
+    path('token/', UserTokenView.as_view())
+]
 
 urlpatterns = [
     path('v1/', include(api_v1_router.urls)),
-    path(
-        'v1/auth/signup/', UserRegView.as_view({'post': 'create'})
-    ),
-    path('v1/auth/token/', UserTokenView.as_view()),
+    path('v1/auth/', include(auth_urls))
 ]

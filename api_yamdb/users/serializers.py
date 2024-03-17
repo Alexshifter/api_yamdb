@@ -1,8 +1,11 @@
+from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from rest_framework_simplejwt import serializers as token_serializers
+from rest_framework_simplejwt.tokens import RefreshToken
 
+from users.constants import (MAX_LEN_EMAIL_FIELD,
+                             MAX_LEN_USERNAME_FIELD)
 from users.models import NewUser
 
 
@@ -23,8 +26,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserRegSerializer(serializers.ModelSerializer):
 
-    email = serializers.EmailField(required=True, max_length=254)
-    username = serializers.SlugField(required=True, max_length=150)
+    email = serializers.EmailField(required=True,
+                                   max_length=MAX_LEN_EMAIL_FIELD)
+    username = serializers.SlugField(required=True,
+                                     max_length=MAX_LEN_USERNAME_FIELD)
 
     def validate_username(self, value):
         if value.lower() == 'me':
@@ -56,21 +61,21 @@ class UserRegSerializer(serializers.ModelSerializer):
         fields = ('username', 'email',)
 
 
-class UserTokenSerializer(token_serializers.TokenObtainPairSerializer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        del self.fields['password']
-        self.fields['username'] = serializers.CharField()
-        self.fields['confirmation_code'] = serializers.CharField()
+class UserTokenSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)
 
     def validate(self, data):
-        username = data['username']
-        confirmation_code = data['confirmation_code']
+        username = data.get('username')
+        confirmation_code = data.get('confirmation_code')
         user = get_object_or_404(NewUser, username=username)
-        if confirmation_code != user.confirmation_code:
+        if confirmation_code != default_token_generator.check_token(
+            user,
+            confirmation_code
+        ):
             raise serializers.ValidationError(
                 {'confirmation_code': 'Неверный код подтверждения.'}
             )
-        refresh = self.get_token(user)
-        token_string_access = str(refresh.access_token)
+        ref_token = RefreshToken(user)
+        token_string_access = str(ref_token.access_token)
         return {'token': token_string_access}
