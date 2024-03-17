@@ -1,13 +1,13 @@
 import csv
 import os
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
+
 from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import NewUser
 
-from api_yamdb.settings import BASE_DIR
-
-CSVFILES_DIRS = os.path.join(BASE_DIR, r'static\data')
+CSVFILES_DIRS = os.path.join(settings.BASE_DIR, r'static\data')
 csvfiles_set = {
     'users': CSVFILES_DIRS + r'\users.csv',
     'category': CSVFILES_DIRS + r'\category.csv',

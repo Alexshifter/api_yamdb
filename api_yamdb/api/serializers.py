@@ -1,4 +1,3 @@
-from django.db.models import Avg, IntegerField
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -8,7 +7,6 @@ from reviews.models import Category, Comment, Genre, Review, Title
 from reviews.constants import (
     MAX_VALUE_SCORE, MAX_LENGHT_NAME, MAX_LENGHT_SLUG, MIN_VALUE_SCORE
 )
-
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -45,7 +43,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         title = get_object_or_404(
             Title,
-            id=self.context['view'].kwargs.get('title_id')
+            id=self.context.get('view').kwargs.get('title_id')
         )
         if request.method == 'POST':
             if title.reviews.filter(author=request.user):

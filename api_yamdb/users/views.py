@@ -1,5 +1,5 @@
-import random
-
+from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from rest_framework import (decorators, filters, mixins, pagination, status,
                             viewsets)
@@ -50,40 +50,38 @@ class UserRegView(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = UserRegSerializer
     model = NewUser
 
-    def send_mail_to_user(self, confirmation_code, email):
+    def get_code_and_send_mail_to_user(self, user):
+
+        confirmation_code = default_token_generator.make_token(user)
+
         return send_mail(
             subject='Your confirmation code on YAMDB',
             message=f'Ваш код подтверждения: {confirmation_code}',
-            from_email='admin@yamdb.not',
-            recipient_list=[email],
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
         )
 
-    def get_exist_user(self, username):
-        return NewUser.objects.get(username=username)
-
     def create(self, request):
-        confirmation_code = random.randint(100, 999)
+        rq_data = request.data
         try:
             exist_user = NewUser.objects.get(
-                username=request.data.get('username'),
-                email=self.request.data.get('email')
+                username=rq_data.get('username'),
+                email=rq_data.get('email')
             )
-
-            exist_user.confirmation_code = confirmation_code
-            exist_user.save()
-            self.send_mail_to_user(confirmation_code, exist_user.email)
-            return Response(request.data, status=status.HTTP_200_OK)
+            self.get_code_and_send_mail_to_user(exist_user)
+            return Response(rq_data, status=status.HTTP_200_OK)
 
         except NewUser.DoesNotExist:
-            serializer = self.get_serializer(data=request.data)
+            serializer = self.get_serializer(data=rq_data)
             serializer.is_valid(raise_exception=True)
-            serializer.save(confirmation_code=confirmation_code)
-            self.send_mail_to_user(confirmation_code,
-                                   serializer.data.get('email'))
-            headers = self.get_success_headers(serializer.data)
+            serializer.save()
+            exist_user = NewUser.objects.get(
+                username=serializer.data.get('username'),
+                email=serializer.data.get('email')
+            )
+            self.get_code_and_send_mail_to_user(exist_user)
             return Response(serializer.data,
-                            status=status.HTTP_200_OK,
-                            headers=headers)
+                            status=status.HTTP_200_OK)
 
 
 class UserTokenView(TokenObtainPairView):
