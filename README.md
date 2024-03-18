@@ -64,6 +64,6 @@ python manage.py runserver
 ### Посмотреть всю документацию для API можно по адресу:
 http://127.0.0.1:8000/redoc/
 ### Авторы проекта
-Алексей Пакаев [AlexShifter](https://github.com/AlexShifter)
-Алексей Беспавлюк [Vardemson](https://github.com/VardDemson)
+- Алексей Пакаев [AlexShifter](https://github.com/AlexShifter)
+- Алексей Беспавлюк [Vardemson](https://github.com/VardDemson)
 
