@@ -28,7 +28,7 @@ git clone https://github.com/Alexshifter/api_yamdb.git
 cd api_yamdb
 ```
 
-Cоздать и активировать виртуальное окружение:
+Cоздать и активировать виртуальное окружение(для Windows):
 
 ```
 python3 -m venv venv
@@ -64,5 +64,6 @@ python manage.py runserver
 ### Посмотреть всю документацию для API можно по адресу:
 http://127.0.0.1:8000/redoc/
 ### Авторы проекта
-[Vardemson](https://github.com/VardDemson)
-[AlexShifter](https://github.com/AlexShifter)
+Алексей Пакаев [AlexShifter](https://github.com/AlexShifter)
+Алексей Беспавлюк [Vardemson](https://github.com/VardDemson)
+
